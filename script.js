@@ -142,20 +142,19 @@ async function fetchAndDisplayWeather(lat, lon) {
 // --- Display Functions ---
 
 function displayCurrentWeather(data) {
-    // Current temperature (from main.temp) and Feels Like (from main.feels_like)
     feelsLikeElem.textContent = `${Math.round(data.main.feels_like)}°C`;
     humidityElem.textContent = `${data.main.humidity}%`;
     windSpeedElem.textContent = `${(data.wind.speed * 3.6).toFixed(1)} km/h`;
     pressureElem.textContent = `${data.main.pressure} hPa`;
     visibilityElem.textContent = `${(data.visibility / 1000).toFixed(1)} km`;
-    uvIndexElem.textContent = 'N/A'; // OpenWeatherMap current weather does not directly provide UV Index
+    uvIndexElem.textContent = 'N/A';
 }
 
 function displayTodayForecastCard(data) {
     todayForecastCard.innerHTML = '';
     const todayDate = new Date();
     const dayName = todayDate.toLocaleDateString('en-US', { weekday: 'short' });
-    const temp = Math.round(data.main.temp); // Current temperature
+    const temp = Math.round(data.main.temp);
     const description = data.weather[0].description;
     const iconCode = data.weather[0].icon;
     const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
@@ -163,7 +162,8 @@ function displayTodayForecastCard(data) {
     todayForecastCard.innerHTML = `
         <p class="day">${dayName}</p>
         <img src="${iconUrl}" alt="${description}" class="icon">
-        <p class="temp">${temp}°C / ${temp}°C</p> <p>${description}</p>
+        <p class="temp">${temp}°C / ${temp}°C</p>
+        <p>${description}</p>
     `;
     todayForecastCard.classList.add('fade-in');
 }
@@ -179,7 +179,6 @@ function displayForecast(data) {
         const date = new Date(item.dt * 1000);
         date.setHours(0, 0, 0, 0);
 
-        // Skip today's data as it's handled by displayTodayForecastCard
         if (date.getTime() === today.getTime()) {
             return;
         }
@@ -187,13 +186,12 @@ function displayForecast(data) {
         const dayKey = date.toISOString().slice(0, 10);
         const hour = new Date(item.dt * 1000).getHours();
 
-        // Select the forecast for midday (around 12-3 PM) for each day for consistency
         if (!dailyForecasts[dayKey] || (hour >= 12 && hour <= 15 && (new Date(dailyForecasts[dayKey].dt * 1000).getHours() < 12 || new Date(dailyForecasts[dayKey].dt * 1000).getHours() > 15))) {
             dailyForecasts[dayKey] = item;
         }
     });
 
-    const forecastDays = Object.values(dailyForecasts).slice(0, 5); // Get up to 5 days of forecast
+    const forecastDays = Object.values(dailyForecasts).slice(0, 5);
 
     if (forecastDays.length === 0) {
         forecastContainer.innerHTML = '<p>No future forecast data available.</p>';
@@ -253,26 +251,25 @@ useLocationBtn.addEventListener('click', () => {
                 
                 // --- Use OpenStreetMap Nominatim for location name ---
                 try {
-                    // It's good practice to include a User-Agent header or 'email' parameter
-                    // with Nominatim requests to identify your application.
-                    const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1&email=kr1456773@gmail.com`;
+                    // Added 'hl=en' parameter to request results in English
+                    const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1&email=kr1456773@gmail.com&hl=en`;
                     
                     const nominatimResponse = await fetch(nominatimUrl);
                     const nominatimData = await nominatimResponse.json();
 
                     let detectedLocationName = 'Your Location'; // Default fallback
 
-                    if (nominatimData.address) { // Check if 'address' object exists in response
+                    if (nominatimData.address) {
                         const address = nominatimData.address;
                         
                         // Define a list of preferred address components in order of specificity and readability
                         const preferredComponents = [
                             address.neighbourhood,
                             address.suburb,
-                            address.village, // For smaller settlements
+                            address.village,
                             address.hamlet,
                             address.road,
-                            address.town, // More specific than city, if available
+                            address.town,
                             address.city
                         ];
 
