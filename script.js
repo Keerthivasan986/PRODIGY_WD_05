@@ -275,13 +275,13 @@ useLocationBtn.addEventListener('click', () => {
 
                         for (const component of preferredComponents) {
                             if (component) {
-                                // Exclude names that look like "Ward XXX" or "Zone XXX" if a better alternative is found
-                                if ((component.toLowerCase().includes('ward') && component.match(/\b\d+\b/)) || 
-                                    (component.toLowerCase().includes('zone') && component.match(/\b\d+\b/))) {
-                                    continue; // Skip this component and try the next one
+                                const lowerCaseComponent = component.toLowerCase();
+                                // Filter out names that look like "Ward XXX" or "Zone XXX"
+                                if (!((lowerCaseComponent.includes('ward') && lowerCaseComponent.match(/\b\d+\b/)) || 
+                                      (lowerCaseComponent.includes('zone') && lowerCaseComponent.match(/\b\d+\b/)))) {
+                                    detectedLocationName = component;
+                                    break; // Found a suitable component, stop searching
                                 }
-                                detectedLocationName = component;
-                                break; // Found a good component, stop searching
                             }
                         }
 
@@ -291,16 +291,16 @@ useLocationBtn.addEventListener('click', () => {
                             detectedLocationName = address.city;
                         }
                         
-                        // Fallback to the full display_name if nothing specific was found AND it's not just "Your Location"
-                        // but only take the first, most relevant part if display_name is very long.
+                        // Fallback to the first part of display_name if nothing specific was found AND it's not just "Your Location"
+                        // but apply filters to this fallback too.
                         if (detectedLocationName === 'Your Location' && nominatimData.display_name) {
-                            // Split by comma and take the first part, often the most common name
-                            detectedLocationName = nominatimData.display_name.split(',')[0].trim();
-                            // If the first part is still something generic, too long, or includes "ward"/"zone", fall back to "Your Location"
-                            if (detectedLocationName.length > 30 || 
-                                detectedLocationName.toLowerCase().includes('ward') ||
-                                detectedLocationName.toLowerCase().includes('zone')) {
-                                detectedLocationName = 'Your Location';
+                            let firstPartDisplayName = nominatimData.display_name.split(',')[0].trim();
+                            const lowerCaseFirstPart = firstPartDisplayName.toLowerCase();
+                            // Apply the same ward/zone filter to the display_name's first part
+                            if (!(lowerCaseFirstPart.length > 30 || 
+                                  (lowerCaseFirstPart.includes('ward') && lowerCaseFirstPart.match(/\b\d+\b/)) ||
+                                  (lowerCaseFirstPart.includes('zone') && lowerCaseFirstPart.match(/\b\d+\b/)))) {
+                                detectedLocationName = firstPartDisplayName;
                             }
                         }
                     }
