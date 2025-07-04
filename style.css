@@ -1,0 +1,380 @@
+/* style.css */
+
+/* Basic Reset & Body Styling */
+body {
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background: linear-gradient(135deg, #a77dff, #6a40df); /* Purple gradient */
+    color: #333;
+    box-sizing: border-box;
+    padding: 20px;
+    /* Removed overflow: hidden; to allow scrolling */
+
+    animation: gradientShift 15s ease infinite alternate;
+    background-size: 200% 200%;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+/* Main Container for the Weather App */
+.weather-app-container {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 35px;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    width: 95%;
+    max-width: 700px;
+    box-sizing: border-box;
+    position: relative;
+    display: flex; /* Use flexbox for vertical stacking */
+    flex-direction: column;
+    align-items: center;
+    min-height: 400px; /* Ensure a minimum height for the container */
+}
+
+/* Title H1 */
+h1 {
+    color: #6a40df;
+    margin-bottom: 30px;
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+/* Input and Buttons Section */
+.input-section {
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+#cityInput {
+    padding: 14px 18px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    width: 250px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#cityInput:focus {
+    outline: none;
+    border-color: #6a40df;
+    box-shadow: 0 0 0 3px rgba(106, 64, 223, 0.2);
+}
+
+button {
+    padding: 14px 25px;
+    border: none;
+    border-radius: 10px;
+    background-color: #6a40df;
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+button:hover {
+    background-color: #5533bb;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    display: none; /* Controlled by JS */
+    flex-direction: column;
+    align-items: center;
+    margin: 40px 0;
+    color: #6a40df;
+    width: 100%;
+}
+
+.spinner {
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #6a40df;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-spinner p {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+
+/* Weather Display Section - Controlled by JS .show class */
+.weather-display {
+    text-align: left;
+    margin-top: 30px;
+    width: 100%;
+    opacity: 0; /* Start invisible */
+    visibility: hidden; /* Hide from screen readers */
+    transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
+    flex-grow: 1; /* Allow this section to take up available vertical space */
+    display: flex; /* Use flex to stack its internal elements vertically */
+    flex-direction: column;
+    align-items: center; /* Center its contents horizontally */
+}
+
+.weather-display.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.weather-display h2 {
+    color: #333;
+    margin-bottom: 25px;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 600;
+    width: 100%; /* Ensure heading takes full width */
+}
+
+/* Current Weather Details Box */
+.current-weather {
+    background-color: #f7f7f7;
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 35px;
+    box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.1);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px 40px;
+    width: 100%; /* Ensure it takes full width within weather-display */
+    box-sizing: border-box; /* Include padding in width */
+}
+
+.current-weather p {
+    margin: 0;
+    font-size: 1.15rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 5px;
+    border-bottom: 1px dashed #eee;
+}
+
+.current-weather p:last-child,
+.current-weather p:nth-last-child(2) {
+    border-bottom: none;
+}
+@media (max-width: 700px) {
+    .current-weather p:not(:last-child) {
+        border-bottom: 1px dashed #eee;
+    }
+}
+
+.current-weather p span:first-child {
+    font-weight: 400;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.current-weather p span:last-child {
+    font-weight: 700;
+    color: #6a40df;
+    font-size: 1.25rem;
+}
+
+/* Forecast Section Title */
+h3 {
+    color: #333;
+    margin-bottom: 25px;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 600;
+    width: 100%; /* Ensure heading takes full width */
+}
+
+/* 5-Day Forecast Container */
+.forecast-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+    background-color: #f7f7f7;
+    border-radius: 15px;
+    box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.08);
+    width: 100%; /* Ensure it takes full width within weather-display */
+    box-sizing: border-box; /* Include padding in width */
+    margin-bottom: 35px; /* Added margin for separation */
+}
+
+/* Individual Forecast Item - Animated Fade-in */
+.forecast-item {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    /* ADJUSTED: Default to 3 items per row for wider range of screens */
+    flex: 1 1 calc(33.333% - 20px);
+    min-width: 150px; /* Slightly increased min-width for better control */
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.5s ease, transform 0.5s ease;
+    box-sizing: border-box;
+    opacity: 0;
+    transform: translateY(20px);
+    margin-bottom: 20px;
+}
+
+.forecast-item.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.forecast-item:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+}
+
+/* Specific style for Today's card to potentially center it if it's alone */
+.forecast-item.today-card {
+    flex: 0 0 auto; /* Prevent it from expanding too much */
+    width: 180px; /* Fixed width, adjust as needed */
+    margin: 0 auto 35px auto; /* Center it and add bottom margin */
+}
+
+
+.forecast-item p {
+    margin: 5px 0;
+    font-size: 1rem;
+}
+
+.forecast-item .day {
+    font-weight: 700;
+    color: #6a40df;
+    margin-bottom: 12px;
+    font-size: 1.2rem;
+}
+
+.forecast-item .temp {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-top: 10px;
+}
+
+.forecast-item .icon {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 8px;
+    vertical-align: middle;
+}
+
+/* Error Message Styling */
+.error-message {
+    background-color: #ffebeb;
+    color: #d8000c;
+    border: 1px solid #ff9999;
+    padding: 18px;
+    border-radius: 10px;
+    margin-top: 25px;
+    font-size: 1.15rem;
+    font-weight: 600;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+    width: 100%;
+}
+
+.error-message.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .current-weather {
+        grid-template-columns: 1fr;
+    }
+    /* .forecast-item flex property is now effectively default for this range */
+    /* flex: 1 1 calc(33.333% - 20px); */
+    h1 {
+        font-size: 2.2rem;
+    }
+    .weather-app-container {
+        padding: 25px;
+    }
+    .current-weather p:not(:last-child) {
+        border-bottom: 1px dashed #eee;
+    }
+    .forecast-item.today-card {
+        width: 100%; /* Take full width on smaller screens */
+    }
+}
+
+@media (max-width: 550px) {
+    .input-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    #cityInput, button {
+        width: 100%;
+        max-width: none;
+    }
+    .forecast-item {
+        flex: 1 1 calc(50% - 20px); /* 2 items per row */
+    }
+    h1 {
+        font-size: 1.8rem;
+    }
+    .weather-display h2 {
+        font-size: 1.6rem;
+    }
+    .current-weather p, .forecast-item p {
+        font-size: 0.95rem;
+    }
+    .current-weather p span:last-child {
+        font-size: 1.1rem;
+    }
+    .forecast-item .temp {
+        font-size: 1.3rem;
+    }
+}
+
+/* NEW MEDIA QUERIES for wider screens: */
+@media (min-width: 1000px) { /* Adjust breakpoint as needed for 4 items */
+    .forecast-item {
+        flex: 1 1 calc(25% - 20px); /* 4 items per row */
+    }
+}
+
+@media (min-width: 1250px) { /* Adjust breakpoint as needed for 5 items */
+    .forecast-item {
+        flex: 1 1 calc(20% - 20px); /* 5 items per row */
+    }
+}
